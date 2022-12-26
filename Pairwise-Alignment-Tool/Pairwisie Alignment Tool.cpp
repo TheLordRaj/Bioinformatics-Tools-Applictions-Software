@@ -29,7 +29,7 @@ void Pairwise_alignment_prot(string Prot1_Seq, string Prot2_Seq, int Prot1_len, 
 void Pairwise_aligning_nuc(string Seq1, string Seq2, int Seq1_length, int Seq2_length){ // doing the DNA alignment
 
 	int gap_pen{};
-    int match_score{};
+	int match_score{};
 	int mismatch{};
 
 
@@ -45,42 +45,40 @@ void Pairwise_aligning_nuc(string Seq1, string Seq2, int Seq1_length, int Seq2_l
 	// Declartion of scoring matrix in which alignment will be performed.
    	int matrix[Seq1_length+1][Seq2_length+1] {0};
 
-
 	// These two for loops apply the gap penalty along the borders of the matrix as per Needleman–Wunsch algorithm
    	for (int i {1}; i <= Seq1_length; i++)
    	{
 		matrix[i][0] = gap_pen  * i;
    	}
-    for (int j {1}; j <= Seq2_length; j++)
+    	for (int j {1}; j <= Seq2_length; j++)
 	{
-       	matrix[0][j] = gap_pen * j;
+       		matrix[0][j] = gap_pen * j;
    	}
 
 	// These two for loops perform the calculatiions. They loop through each provided sequence at each base is compared.  
 	for(int i {0}; i <= Seq1_length; i++)
-    {
-        for(int j {0}; j <= Seq2_length; j++)
-        {
-            if (i > 0 && j > 0)
-            {
+    	{
+        	for(int j {0}; j <= Seq2_length; j++)
+        	{
+            		if (i > 0 && j > 0)
+            		{
 				// If the sequences share the same base at certain location the corresponding coordinate in the matrix is filled with match score + the diagonal value.
-                if (Seq1[i-1] == Seq2[j-1])
-    		    {
-                    matrix[i][j] = matrix[i-1][j-1] + match_score;
-                }
+                		if (Seq1[i-1] == Seq2[j-1])
+    		    		{
+                   			matrix[i][j] = matrix[i-1][j-1] + match_score;
+                		}
 				// If not a match the coordinate of the matrix will be filled with highest value of either horizontal gap score, vertical gap score or
 				// diagonal value + mismatch
-                else
-                {
+               			else
+                		{
 					// Highest value is chosen out of mismtach or gap penalties
-                    matrix[i][j] = max({matrix[i-1][j-1] + mismatch  ,
+                    			matrix[i][j] = max({matrix[i-1][j-1] + mismatch  ,
                                                 matrix[i-1][j] + gap_pen ,
                                                 matrix[i][j-1] + gap_pen});
-                }
-            }
-        }
-    }
-
+                		}
+            		}
+        	}
+    	}
 	cout <<  endl;
 
 	// This finds the score of the alignment which will be the value at the most bottom right
@@ -103,24 +101,24 @@ void Pairwise_aligning_nuc(string Seq1, string Seq2, int Seq1_length, int Seq2_l
 		// If the current cell's value is equal to the cell above it + the gap penalty, a gap is introduced to the top sequence, the bottom remains the same
 		if (terminal == matrix[decrement_X][decrement_Y-1] + gap_pen) 
 		{
-            temp = matrix[decrement_X][decrement_Y-1];
-            terminal = temp;
-            decrement_Y--;
+            		temp = matrix[decrement_X][decrement_Y-1];
+            		terminal = temp;
+            		decrement_Y--;
 			Seq1_aligned += '_';
 			Seq2_aligned += Seq2[inc_seq2];
 			inc_seq2--;
-        }
+        	}
 
 		// If the current cell's value is equal to the cell to the left + the gap penalty, a gap is introduced to the bottom sequence, the top remains the same
 		else if (terminal == matrix[decrement_X-1][decrement_Y] + gap_pen) 
 		{
-            temp = matrix[decrement_X-1][decrement_Y];
-            terminal = temp;
-            decrement_X--;
-            Seq1_aligned += Seq1[inc_seq1];
-            Seq2_aligned += '_';
+            		temp = matrix[decrement_X-1][decrement_Y];
+            		terminal = temp;
+            		decrement_X--;
+            		Seq1_aligned += Seq1[inc_seq1];
+            		Seq2_aligned += '_';
 			inc_seq1--;
-        }
+        	}
 
 		// If the current cell's value is equal to the diagonal cell's value + the match score, The nucleotide bases of both sequences are added
 		else if (terminal == matrix[decrement_X-1][decrement_Y-1] + match_score) 
@@ -138,34 +136,34 @@ void Pairwise_aligning_nuc(string Seq1, string Seq2, int Seq1_length, int Seq2_l
 		// If the current cell's value is equal to the diagonal cell's value + the mismatch score, a gap is introduced to both sequences
 		else if (terminal == matrix[decrement_X-1][decrement_Y-1] + mismatch) 
 		{
-            temp = matrix[decrement_X-1][decrement_Y-1];
-            terminal = temp;
+            		temp = matrix[decrement_X-1][decrement_Y-1];
+            		terminal = temp;
 			decrement_X--;
-            decrement_Y--;
+            		decrement_Y--;
 			Seq1_aligned += Seq1[inc_seq1];
-            Seq2_aligned += Seq2[inc_seq2];
+            		Seq2_aligned += Seq2[inc_seq2];
 			inc_seq1--;
-            inc_seq2--;
-        }
+            		inc_seq2--;
+        	}
 
 	}
 
 	// These two while loops handle to condition of gaps being at the start of the aligned sequences
 	// If the current matrix corrdinate has a y value of zero introduce gaps to the bottom sequence and added the base of the current top sequence
 	while (decrement_X >= 1 && decrement_Y < 1)
-    {
-    	Seq1_aligned += Seq1[inc_seq1];
-        Seq2_aligned += '_';
-        decrement_X--;
-    }
+    	{
+    		Seq1_aligned += Seq1[inc_seq1];
+		Seq2_aligned += '_';
+		decrement_X--;
+    	}
 
 	// If the current matrix corrdinate has a x value of zero introduce gaps to the top sequence and added the base of the current bottom sequence
-    while (decrement_Y >= 1 && decrement_X < 1)
-    {
-       	Seq1_aligned += '_';
-       	Seq2_aligned += Seq2[inc_seq2];;
-       	decrement_Y--;
-    }
+   	 while (decrement_Y >= 1 && decrement_X < 1)
+    	{
+		Seq1_aligned += '_';
+		Seq2_aligned += Seq2[inc_seq2];;
+		decrement_Y--;
+    	}
 
 	// These reverse the order of aligned sequences.
 	reverse(Seq1_aligned.begin(), Seq1_aligned.end());
@@ -175,7 +173,7 @@ void Pairwise_aligning_nuc(string Seq1, string Seq2, int Seq1_length, int Seq2_l
 	cout << "Alignment complete! Your aligned sequences are:" << endl;
 
 	cout << "Sequence 1: " << Seq1_aligned << endl;
-    cout << "Sequence 2: " << Seq2_aligned << endl;
+    	cout << "Sequence 2: " << Seq2_aligned << endl;
 } // doing the alignment
 
 
